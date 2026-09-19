@@ -1,28 +1,43 @@
 # Laws of UX
 
-Reviews and fixes frontend UI against the 30 Laws of UX from
-[lawsofux.com](https://lawsofux.com/), plus a small set of curated extended
-rules. The work is split across three strictly separated roles — a researcher
-who gathers facts, a critic who judges them against the laws, and a fixer who
-changes code — and only the fixer ever edits a file.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
+An agent plugin that reviews and fixes frontend UI against the
+[30 Laws of UX](https://lawsofux.com/), plus a small set of curated extended
+rules. It works across four harnesses — Claude Code, Cursor, Codex CLI, and
+Gemini CLI — from a single repository.
+
+The work is split across three strictly separated roles:
+
+- a **researcher** who gathers a neutral context brief,
+- a **critic** who maps concrete defects to named laws with severity scores,
+- a **fixer** who applies narrow fixes — and is the only role that ever
+  edits a file.
+
+Findings must state a mechanism — why a specific property costs a real user
+something specific — not just cite a law name and assert "best practice."
 
 ## Install
 
 ### Claude Code
 
-Install from a marketplace, or point at a local path. Claude Code discovers
-this plugin's `skills/` and `agents/` directories by convention, so no
-additional wiring is needed once the plugin is installed. This is also the
-only harness where the researcher, critic, and fixer roles run as separately
-registered subagents (`laws-of-ux:ux-researcher`, `laws-of-ux:ux-critic`,
-`laws-of-ux:ux-fixer`) with platform-enforced tool allowlists — see
-[Tool enforcement varies by harness](#tool-enforcement-varies-by-harness)
-below.
+```bash
+claude plugin marketplace add https://github.com/Free-cat/laws-of-ux
+claude plugin install laws-of-ux
+```
+
+Claude Code discovers the plugin's `skills/` and `agents/` directories by
+convention, so no additional wiring is needed. This is also the only harness
+where the three roles run as separately registered subagents
+(`laws-of-ux:ux-researcher`, `laws-of-ux:ux-critic`, `laws-of-ux:ux-fixer`)
+with platform-enforced tool allowlists — see
+[Tool enforcement varies by harness](#tool-enforcement-varies-by-harness).
 
 ### Cursor
 
 Install the plugin by pointing Cursor at this repository. `.cursor-plugin/plugin.json`
 declares `"skills": "./skills/"`, which tells Cursor where to find the skill.
+
 Cursor auto-discovers the plugin's `agents/` directory too, but it does not
 honor a `tools:` allowlist in agent frontmatter — the only restriction it
 supports is `readonly: true`. The read-only discipline for the researcher and
@@ -49,8 +64,6 @@ and the skill runs its three phases inline in one conversation instead — that
 is a supported path, not a degraded one.
 
 ### Gemini CLI
-
-Install with:
 
 ```bash
 gemini extensions install <path-to-this-repo>
@@ -80,7 +93,7 @@ the `reference/*-prompt.md` templates, which carry the read-only discipline in
 the prompt text. On all three, preserve that prompt text verbatim when
 adapting the skill.
 
-## Commands
+## Usage
 
 | Command | Pipeline |
 |---|---|
@@ -89,6 +102,16 @@ adapting the skill.
 | `fix [target]` | fixer, against an approved findings list |
 | `audit [target]` | researcher → critic → present findings → user picks → fixer |
 
+On Claude Code, invoke the skill as `/laws-of-ux:ux-laws` followed by the
+command and target:
+
+```
+/laws-of-ux:ux-laws critique src/components/CheckoutForm.tsx
+```
+
+On the other harnesses, ask in plain language: "critique the UX of
+`src/components/CheckoutForm.tsx` against the Laws of UX".
+
 `audit` never auto-applies everything it finds — it presents findings and the
 user picks which to act on. `fix` requires an approved findings list; without
 one, run `critique` first and get approval.
@@ -96,11 +119,8 @@ one, run `critique` first and get approval.
 ## What findings look like
 
 Every finding uses the schema in `skills/ux-laws/reference/rubric.md`: `file`,
-`line`, `law`, `source`, `summary`, `failure_scenario`, `severity`. A finding
-must name a mechanism — why this specific property costs a real user something
-specific — not just cite a law name and assert "best practice."
-
-A worked example:
+`line`, `law`, `source`, `summary`, `failure_scenario`, `severity`. A worked
+example:
 
 ```
 file: src/components/CheckoutForm.tsx
@@ -132,13 +152,10 @@ rather than assumed correct indefinitely. The five-theme grouping in that file
 is this plugin's own organization for faster retrieval, not something
 lawsofux.com provides — the site presents a flat, uncategorized list.
 
-## Releasing
+Pull requests are welcome. Run `bash scripts/validate.sh` before submitting —
+it checks manifest consistency, reference-file presence, agent allowlists, and
+version agreement across the four manifests.
 
-Bumping the version means editing **all four** manifests in the same commit:
+## License
 
-- `.claude-plugin/plugin.json`
-- `.cursor-plugin/plugin.json`
-- `.codex-plugin/plugin.json`
-- `gemini-extension.json`
-
-Then run `bash scripts/validate.sh` — it fails if the four versions disagree.
+[MIT](LICENSE) © Artem Melnikov

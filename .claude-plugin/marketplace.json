@@ -1,0 +1,14 @@
+{
+  "name": "laws-of-ux",
+  "owner": {
+    "name": "Artem Melnikov"
+  },
+  "plugins": [
+    {
+      "name": "laws-of-ux",
+      "source": "./",
+      "description": "Reviews and fixes frontend UI against the Laws of UX.",
+      "category": "design"
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "name": "laws-of-ux",
+  "displayName": "Laws of UX",
+  "description": "Reviews and fixes frontend UI against Laws of UX \u2014 Fitts's Law, Hick's Law, Jakob's Law, and the rest of the canon, plus curated extended UX principles.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Artem Melnikov"
+  },
+  "license": "MIT",
+  "keywords": [
+    "ux",
+    "design",
+    "heuristics",
+    "laws-of-ux",
+    "critique",
+    "frontend"
+  ],
+  "skills": "./skills/"
+}
